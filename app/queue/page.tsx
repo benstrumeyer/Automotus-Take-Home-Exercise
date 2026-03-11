@@ -45,18 +45,18 @@ export default function QueuePage() {
 
   return (
     <main id="main-content" className={styles.main}>
-      {isLoading && <LoadingSpinner label="Loading zones…" />}
+      {isLoading ? <LoadingSpinner label="Loading zones…" /> : null}
 
-      {isError && (
+      {isError ? (
         <ErrorState
           message="Couldn't load the zone queue. Check your connection."
           onRetry={() => refetch()}
         />
-      )}
+      ) : null}
 
-      {queue && queue.length === 0 && <EmptyQueue />}
+      {queue && queue.length === 0 ? <EmptyQueue /> : null}
 
-      {queue && queue.length > 0 && (
+      {queue && queue.length > 0 ? (
         <div className={styles.list}>
           <Button className={styles['route-btn']} onClick={handleNavigateQueue}>
             <Navigation size={18} aria-hidden="true" />
@@ -99,7 +99,7 @@ export default function QueuePage() {
             })}
           </div>
         </div>
-      )}
+      ) : null}
 
       <ZoneDetailDrawer
         selectedZone={selectedZone}

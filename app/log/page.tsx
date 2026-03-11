@@ -12,16 +12,16 @@ export default function LogPage() {
 
   return (
     <main id="main-content" className={styles.main}>
-      {isLoading && <LoadingSpinner label="Loading activity…" />}
+      {isLoading ? <LoadingSpinner label="Loading activity…" /> : null}
 
-      {isError && (
+      {isError ? (
         <ErrorState
           message="Couldn't load your activity log."
           onRetry={() => refetch()}
         />
-      )}
+      ) : null}
 
-      {activity && activity.length === 0 && (
+      {activity && activity.length === 0 ? (
         <div className={styles.empty}>
           <ClipboardList size={48} className={styles['empty-icon']} aria-hidden="true" />
           <h2 className={styles['empty-title']}>No activity yet</h2>
@@ -29,15 +29,15 @@ export default function LogPage() {
             Start by visiting a zone from the queue. Your actions will appear here.
           </p>
         </div>
-      )}
+      ) : null}
 
-      {activity && activity.length > 0 && (
+      {activity && activity.length > 0 ? (
         <div>
           {activity.map((entry) => (
             <ActivityEntryCard key={entry.id} entry={entry} />
           ))}
         </div>
-      )}
+      ) : null}
     </main>
   )
 }
