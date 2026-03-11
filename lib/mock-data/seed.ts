@@ -1,20 +1,6 @@
-import type {
-  QueueStop,
-  Vehicle,
-  ActivityEntry,
-  ZoneStatus,
-  VehicleType,
-  OverstayStatus,
-} from '@/types'
-import { computePriorityScore, getPriorityLevel } from './priority'
-import { generateId } from './utils'
-import { getCarImageUrl } from './car-image'
+import type { VehicleType, OverstayStatus } from '@/types'
 
-// ---------------------------------------------------------------------------
-// Seed zone definitions (28 zones from Philadelphia map)
-// ---------------------------------------------------------------------------
-
-interface ZoneSeed {
+export interface ZoneSeed {
   id: string
   name: string
   address: string
@@ -24,7 +10,7 @@ interface ZoneSeed {
   vehicles: VehicleSeed[]
 }
 
-interface VehicleSeed {
+export interface VehicleSeed {
   plate: string
   type: VehicleType
   make: string
@@ -35,13 +21,11 @@ interface VehicleSeed {
   timeLimitMinutes: number
 }
 
-const now = () => new Date().toISOString()
-
-function minutesAgo(min: number): string {
+export function minutesAgo(min: number): string {
   return new Date(Date.now() - min * 60000).toISOString()
 }
 
-function computeOverstay(arrivalMinutesAgo: number, timeLimitMinutes: number) {
+export function computeOverstay(arrivalMinutesAgo: number, timeLimitMinutes: number) {
   const overstay = arrivalMinutesAgo - timeLimitMinutes
   let status: OverstayStatus = 'ok'
   if (overstay > 0) status = 'violation'
@@ -49,7 +33,7 @@ function computeOverstay(arrivalMinutesAgo: number, timeLimitMinutes: number) {
   return { overstay_minutes: Math.max(0, overstay), overstay_status: status }
 }
 
-const ZONE_SEEDS: ZoneSeed[] = [
+export const ZONE_SEEDS: ZoneSeed[] = [
   // --- HIGH PRIORITY ZONES ---
   {
     id: 'zone-03', name: 'Chestnut & 18th (W)', address: '1800 Chestnut St (West)',
@@ -194,207 +178,3 @@ const ZONE_SEEDS: ZoneSeed[] = [
     ],
   },
 ]
-
-// ---------------------------------------------------------------------------
-// Mutable in-memory state (reset on server restart)
-// Attached to globalThis so state survives HMR / module re-evaluation in dev
-// ---------------------------------------------------------------------------
-
-interface MockState {
-  vehicles: Vehicle[]
-  zones: QueueStop[]
-  activityLog: ActivityEntry[]
-}
-
-const GLOBAL_KEY = '__parkpatrol_mock_state__' as const
-
-function buildVehicles(): Vehicle[] {
-  const result: Vehicle[] = []
-  for (const zone of ZONE_SEEDS) {
-    for (const v of zone.vehicles) {
-      const { overstay_minutes, overstay_status } = computeOverstay(v.arrivalMinutesAgo, v.timeLimitMinutes)
-      result.push({
-        id: `veh-${v.plate.toLowerCase().replace(/-/g, '')}`,
-        zone_id: zone.id,
-        license_plate: v.plate,
-        type: v.type,
-        make: v.make,
-        model: v.model,
-        color: v.color,
-        arrival_time: minutesAgo(v.arrivalMinutesAgo),
-        time_limit_minutes: v.timeLimitMinutes,
-        overstay_minutes,
-        overstay_status,
-        spot_label: v.spot,
-        image_url: getCarImageUrl(v.make, v.model, v.color),
-      })
-    }
-  }
-  return result
-}
-
-function buildZones(vehicleList: Vehicle[]): QueueStop[] {
-  return ZONE_SEEDS.map((zone) => {
-    const zoneVehicles = vehicleList.filter((v) => v.zone_id === zone.id)
-    const overstayCount = zoneVehicles.filter((v) => v.overstay_status === 'violation').length
-    const approachingCount = zoneVehicles.filter((v) => v.overstay_status === 'approaching').length
-    const violationCount = overstayCount
-    const occupancy = zoneVehicles.length
-    const score = computePriorityScore(overstayCount, violationCount, occupancy, zone.maxCapacity)
-    return {
-      id: zone.id,
-      zone_id: zone.id,
-      zone_name: zone.name,
-      address: zone.address,
-      lat: zone.lat,
-      lng: zone.lng,
-      priority_score: Math.round(score * 100) / 100,
-      priority_level: getPriorityLevel(score),
-      vehicle_count: occupancy,
-      overstay_count: overstayCount,
-      violation_count: violationCount,
-      approaching_count: approachingCount,
-      occupancy,
-      max_capacity: zone.maxCapacity,
-      status: 'idle' as ZoneStatus,
-      vehicle_thumbnails: zoneVehicles
-        .filter((v) => v.overstay_status === 'violation')
-        .map((v) => v.image_url)
-        .filter(Boolean),
-    }
-  })
-}
-
-function createFreshState(): MockState {
-  const vehicles = buildVehicles()
-  return {
-    vehicles,
-    zones: buildZones(vehicles),
-    activityLog: [],
-  }
-}
-
-/** Returns the singleton mock state, creating it on first access */
-function getState(): MockState {
-  const g = globalThis as unknown as Record<string, MockState | undefined>
-  if (!g[GLOBAL_KEY]) {
-    g[GLOBAL_KEY] = createFreshState()
-  }
-  return g[GLOBAL_KEY]!
-}
-
-// ---------------------------------------------------------------------------
-// Public API for route handlers
-// ---------------------------------------------------------------------------
-
-/** Get all zones sorted by priority score descending */
-export function getQueue(): QueueStop[] {
-  const { zones } = getState()
-  return [...zones].sort((a, b) => b.priority_score - a.priority_score)
-}
-
-/** Get a single zone by ID */
-export function getZone(zoneId: string): QueueStop | undefined {
-  const { zones } = getState()
-  return zones.find((z) => z.zone_id === zoneId)
-}
-
-/** Get vehicles for a zone */
-export function getZoneVehicles(zoneId: string): Vehicle[] {
-  const { vehicles } = getState()
-  return vehicles.filter((v) => v.zone_id === zoneId && !v.actioned)
-}
-
-/** Arrive at a zone — sets status to on_scene, logs activity */
-export function arriveAtZone(zoneId: string): { zone: QueueStop; activity: ActivityEntry } | undefined {
-  const { zones, activityLog } = getState()
-  const zone = zones.find((z) => z.zone_id === zoneId)
-  if (!zone) return undefined
-  zone.status = 'on_scene'
-  const entry: ActivityEntry = {
-    id: generateId(),
-    zone_id: zoneId,
-    zone_name: zone.zone_name,
-    action: 'arrive',
-    timestamp: now(),
-  }
-  activityLog.unshift(entry)
-  return { zone, activity: entry }
-}
-
-/** Depart from a zone — sets status back to idle, logs activity */
-export function departZone(zoneId: string): { zone: QueueStop; activity: ActivityEntry } | undefined {
-  const { zones, activityLog } = getState()
-  const zone = zones.find((z) => z.zone_id === zoneId)
-  if (!zone) return undefined
-  zone.status = 'idle'
-  const entry: ActivityEntry = {
-    id: generateId(),
-    zone_id: zoneId,
-    zone_name: zone.zone_name,
-    action: 'depart',
-    timestamp: now(),
-  }
-  activityLog.unshift(entry)
-  return { zone, activity: entry }
-}
-
-/** Take enforcement action on a vehicle — marks vehicle, recalculates zone, logs activity */
-export function enforceVehicle(
-  zoneId: string,
-  vehicleId: string,
-  action: 'cite' | 'warn' | 'skip',
-  note?: string
-): { zone: QueueStop; vehicle: Vehicle; activity: ActivityEntry } | undefined {
-  const { zones, vehicles, activityLog } = getState()
-  const zone = zones.find((z) => z.zone_id === zoneId)
-  if (!zone) return undefined
-  const vehicle = vehicles.find((v) => v.id === vehicleId && v.zone_id === zoneId)
-  if (!vehicle) return undefined
-
-  vehicle.actioned = action
-
-  // Recompute zone stats
-  const zoneVehicles = vehicles.filter((v) => v.zone_id === zoneId && !v.actioned)
-  zone.vehicle_count = zoneVehicles.length
-  zone.overstay_count = zoneVehicles.filter((v) => v.overstay_status === 'violation').length
-  zone.violation_count = zone.overstay_count
-  zone.approaching_count = zoneVehicles.filter((v) => v.overstay_status === 'approaching').length
-  zone.occupancy = zoneVehicles.length
-  zone.priority_score = Math.round(
-    computePriorityScore(zone.overstay_count, zone.violation_count, zone.occupancy, zone.max_capacity) * 100
-  ) / 100
-  zone.priority_level = getPriorityLevel(zone.priority_score)
-  zone.vehicle_thumbnails = zoneVehicles
-    .filter((v) => v.overstay_status === 'violation')
-    .map((v) => v.image_url)
-    .filter(Boolean)
-
-  const entry: ActivityEntry = {
-    id: generateId(),
-    zone_id: zoneId,
-    zone_name: zone.zone_name,
-    vehicle_id: vehicleId,
-    license_plate: vehicle.license_plate,
-    vehicle_image: vehicle.image_url,
-    action,
-    note,
-    timestamp: now(),
-  }
-  activityLog.unshift(entry)
-
-  const { actioned: _, ...publicVehicle } = vehicle
-  return { zone, vehicle: publicVehicle as Vehicle, activity: entry }
-}
-
-/** Get all activity entries, most recent first */
-export function getActivity(): ActivityEntry[] {
-  const { activityLog } = getState()
-  return [...activityLog]
-}
-
-/** Reset state to initial seed data (useful for testing) */
-export function resetState(): void {
-  const g = globalThis as unknown as Record<string, MockState | undefined>
-  g[GLOBAL_KEY] = createFreshState()
-}

@@ -1,5 +1,3 @@
-import type { PriorityLevel } from '@/types'
-
 /**
  * Computes a priority score for a zone based on enforcement urgency.
  *
@@ -18,18 +16,4 @@ export function computePriorityScore(
 ): number {
   const occupancyPct = maxCapacity > 0 ? (occupancy / maxCapacity) * 100 : 0
   return overstayCount * 3 + violationCount * 2 + occupancyPct / 100
-}
-
-/**
- * Maps a numeric priority score to a categorical level.
- *
- * Thresholds:
- * - >= 4  → high
- * - >= 1  → medium
- * - < 1   → clear
- */
-export function getPriorityLevel(score: number): PriorityLevel {
-  if (score >= 4) return 'high'
-  if (score >= 1) return 'medium'
-  return 'clear'
 }
