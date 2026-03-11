@@ -1,0 +1,139 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ----------------------------------------------------------------
+   Tailwind theme tokens — maps CSS custom properties to utilities
+   ---------------------------------------------------------------- */
+@theme inline {
+  --font-sans: var(--font-sans);
+
+  /* Core palette */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Brand */
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-gray: var(--brand-gray);
+
+  /* Status */
+  --color-status-violation: var(--status-violation);
+  --color-status-approaching: var(--status-approaching);
+  --color-status-clear: var(--status-clear);
+
+  /* Radius scale */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* ----------------------------------------------------------------
+   Design tokens — single source of truth for all colors
+   Values mirror styles/_colors.scss for SCSS module access
+   ---------------------------------------------------------------- */
+:root {
+  /* Brand */
+  --brand-primary: #116dff;
+  --brand-accent: #ea492e;
+  --brand-dark: #080808;
+  --brand-gray: #959595;
+  --brand-white: #ffffff;
+
+  /* Status */
+  --status-violation: #ea492e;
+  --status-approaching: #F59E0B;
+  --status-clear: #22C55E;
+
+  /* UI surfaces */
+  --background: #f8f9fa;
+  --foreground: #080808;
+  --card: #ffffff;
+  --card-foreground: #080808;
+  --popover: #ffffff;
+  --popover-foreground: #080808;
+
+  /* Interactive */
+  --primary: #116dff;
+  --primary-foreground: #ffffff;
+  --secondary: #f0f4f8;
+  --secondary-foreground: #080808;
+  --muted: #f0f4f8;
+  --muted-foreground: #959595;
+  --accent: #f0f4f8;
+  --accent-foreground: #080808;
+  --destructive: #ea492e;
+
+  /* Borders & focus */
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #116dff;
+  --radius: 0.625rem;
+}
+
+/* ----------------------------------------------------------------
+   Base layer — resets & global interaction styles
+   ---------------------------------------------------------------- */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    @apply font-sans;
+  }
+
+  button,
+  [role="button"],
+  a,
+  summary,
+  [type="submit"],
+  [type="button"],
+  [type="reset"] {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  button:not(:disabled):active,
+  [role="button"]:not(:disabled):active,
+  a:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* Safe area padding for mobile bottom nav */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

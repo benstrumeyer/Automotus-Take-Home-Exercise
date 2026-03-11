@@ -1,0 +1,27 @@
+// Spacing scale (4px base)
+$space-xs: 4px;
+$space-sm: 8px;
+$space-md: 16px;
+$space-lg: 24px;
+$space-xl: 32px;
+$space-2xl: 48px;
+
+// Touch targets
+$tap-target-min: 44px;
+
+// Type scale
+$font-size-xs: 0.75rem;   // 12px
+$font-size-sm: 0.875rem;  // 14px
+$font-size-base: 1rem;    // 16px
+$font-size-lg: 1.125rem;  // 18px
+$font-size-xl: 1.25rem;   // 20px
+$font-size-2xl: 1.5rem;   // 24px
+
+// Border radius
+$radius-sm: 6px;
+$radius-md: 8px;
+$radius-lg: 12px;
+
+// Breakpoints
+$bp-mobile: 375px;
+$bp-tablet: 768px;

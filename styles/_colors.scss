@@ -1,0 +1,22 @@
+// Single source of truth for all color values.
+// SCSS modules @use this file; CSS custom properties in globals.css mirror these.
+
+// Brand
+$brand-primary: #116dff;
+$brand-accent: #ea492e;
+$brand-dark: #080808;
+$brand-gray: #959595;
+$brand-white: #ffffff;
+
+// Status
+$status-violation: #ea492e;
+$status-approaching: #F59E0B;
+$status-clear: #22C55E;
+
+// Action (activity log)
+$action-cite: $status-violation;
+$action-warn: #f5a623;
+$action-skip: #888;
+$action-clear: #34c759;
+$action-arrive: $brand-primary;
+$action-depart: $brand-primary;
