@@ -8,7 +8,7 @@ import styles from './bottom-nav.module.scss'
 
 const NAV_ITEMS = [
   { href: '/map', label: 'Map', icon: Map },
-  { href: '/queue', label: 'Route', icon: List },
+  { href: '/queue', label: 'Queue', icon: List },
   { href: '/log', label: 'Log', icon: ClipboardList },
 ] as const
 

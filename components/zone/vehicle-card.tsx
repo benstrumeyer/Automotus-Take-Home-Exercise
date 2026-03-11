@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 import type { Vehicle, EnforcementAction } from '@/types'
 import { Badge } from '@/components/ui/badge'
@@ -11,7 +12,6 @@ import styles from './vehicle-card.module.scss'
 interface VehicleCardProps {
   vehicle: Vehicle
   onAction: (vehicleId: string, action: EnforcementAction) => void
-  isActioning?: boolean
 }
 
 const TYPE_COLORS: Record<string, string> = {
@@ -21,7 +21,8 @@ const TYPE_COLORS: Record<string, string> = {
   commercial: 'bg-slate-100 text-slate-800',
 }
 
-export function VehicleCard({ vehicle, onAction, isActioning }: VehicleCardProps) {
+export function VehicleCard({ vehicle, onAction }: VehicleCardProps) {
+  const [clicked, setClicked] = useState<EnforcementAction | null>(null)
   if (vehicle.actioned) return null
 
   const overstayLabel =
@@ -65,31 +66,35 @@ export function VehicleCard({ vehicle, onAction, isActioning }: VehicleCardProps
       <div className={styles.actions}>
         <Button
           size="sm"
-          className={styles.cite}
+          className={cn(styles.cite, clicked === 'cite' && styles.clicked)}
           onClick={() => {
             if (window.confirm(`Cite vehicle ${vehicle.license_plate}?`)) {
+              setClicked('cite')
               onAction(vehicle.id, 'cite')
             }
           }}
-          disabled={isActioning}
         >
           Cite
         </Button>
         <Button
           size="sm"
           variant="secondary"
-          className={styles.action}
-          onClick={() => onAction(vehicle.id, 'warn')}
-          disabled={isActioning}
+          className={cn(styles.action, clicked === 'warn' && styles.clicked)}
+          onClick={() => {
+            setClicked('warn')
+            onAction(vehicle.id, 'warn')
+          }}
         >
           Warn
         </Button>
         <Button
           size="sm"
           variant="outline"
-          className={cn(styles.action, 'text-muted-foreground')}
-          onClick={() => onAction(vehicle.id, 'skip')}
-          disabled={isActioning}
+          className={cn(styles.action, 'text-muted-foreground', clicked === 'skip' && styles.clicked)}
+          onClick={() => {
+            setClicked('skip')
+            onAction(vehicle.id, 'skip')
+          }}
         >
           Skip
         </Button>

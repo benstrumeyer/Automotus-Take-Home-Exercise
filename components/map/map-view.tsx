@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 import {
   APIProvider,
   Map as GoogleMap,
@@ -8,6 +8,7 @@ import {
 } from '@vis.gl/react-google-maps'
 import type { QueueStop } from '@/types'
 import { MapViewFallback } from './map-view-fallback'
+import styles from './map-view.module.scss'
 
 interface MapViewProps {
   zones: QueueStop[]
@@ -35,7 +36,7 @@ function ZonePin({ color, count }: { color: string; count: number }) {
       width={hasViolations ? 32 : 26}
       height={hasViolations ? 38 : 32}
       viewBox={hasViolations ? '0 0 32 38' : '0 0 26 32'}
-      style={{ cursor: 'pointer', filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.3))' }}
+      className={styles.zonePin}
     >
       <path
         d={hasViolations
@@ -69,43 +70,27 @@ function ZonePin({ color, count }: { color: string; count: number }) {
 
 function OfficerDot() {
   return (
-    <div style={{ position: 'relative', width: 40, height: 40 }}>
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: '50%',
-          background: 'rgba(66,133,244,0.2)',
-          animation: 'officer-pulse 2s ease-out infinite',
-        }}
-      />
+    <div className={styles.officerDot}>
+      <div className={styles.officerPulse} />
       <svg
         width="20"
         height="20"
         viewBox="0 0 20 20"
-        style={{ position: 'absolute', top: 10, left: 10 }}
+        className={styles.officerIcon}
       >
         <circle cx="10" cy="10" r="8" fill="#4285F4" stroke="white" strokeWidth="3" />
       </svg>
-      <style>{`
-        @keyframes officer-pulse {
-          0% { transform: scale(1); opacity: 1; }
-          100% { transform: scale(2.2); opacity: 0; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          div[style*="officer-pulse"] { animation: none; }
-        }
-      `}</style>
     </div>
   )
 }
 
+function getColor(zone: QueueStop) {
+  if (zone.violation_count > 0) return PRIORITY_COLORS.high
+  if (zone.approaching_count > 0) return PRIORITY_COLORS.medium
+  return PRIORITY_COLORS.clear
+}
+
 function GoogleMapView({ zones, onMarkerTap, officerLocation }: MapViewProps) {
-  const getColor = useCallback((zone: QueueStop) => {
-    if (zone.violation_count > 0) return PRIORITY_COLORS.high
-    if (zone.approaching_count > 0) return PRIORITY_COLORS.medium
-    return PRIORITY_COLORS.clear
-  }, [])
 
   return (
     <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>
@@ -152,8 +137,6 @@ export function MapView(props: MapViewProps) {
 }
 
 // Minimal error boundary to catch Google Maps load failures
-import React from 'react'
-
 class ErrorBoundaryWrapper extends React.Component<
   { children: React.ReactNode; onError: () => void },
   { hasError: boolean }

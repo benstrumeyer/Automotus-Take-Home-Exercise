@@ -134,7 +134,6 @@ export function ZoneDetailDrawer({ selectedZone, open, onOpenChange }: ZoneDetai
                 key={vehicle.id}
                 vehicle={vehicle}
                 onAction={handleVehicleAction}
-                isActioning={enforce.isPending}
               />
             ))}
           </div>

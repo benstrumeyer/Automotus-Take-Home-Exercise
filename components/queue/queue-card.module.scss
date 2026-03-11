@@ -73,15 +73,16 @@
 
 .thumbs {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 4px;
   margin-top: 4px;
 }
 
 .thumb {
-  width: 36px;
-  height: 24px;
-  border-radius: 3px;
+  width: 56px;
+  height: 36px;
+  border-radius: 4px;
   overflow: hidden;
   background: var(--muted);
   flex-shrink: 0;
@@ -91,11 +92,4 @@
     height: 100%;
     object-fit: cover;
   }
-}
-
-.more {
-  font-size: $font-size-xs;
-  color: var(--muted-foreground);
-  font-weight: 600;
-  padding-left: 2px;
 }

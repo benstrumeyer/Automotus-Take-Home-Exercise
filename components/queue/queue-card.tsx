@@ -33,14 +33,11 @@ export function QueueCard({ stop, onTap }: QueueCardProps) {
 
       {stop.vehicle_thumbnails.length > 0 && (
         <div className={styles.thumbs}>
-          {stop.vehicle_thumbnails.slice(0, 5).map((src, i) => (
+          {stop.vehicle_thumbnails.map((src, i) => (
             <div key={i} className={styles.thumb}>
-              <Image src={src} alt="" width={36} height={24} unoptimized />
+              <Image src={src} alt="" width={56} height={36} unoptimized />
             </div>
           ))}
-          {stop.vehicle_thumbnails.length > 5 && (
-            <span className={styles.more}>+{stop.vehicle_thumbnails.length - 5}</span>
-          )}
         </div>
       )}
     </button>

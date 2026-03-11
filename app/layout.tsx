@@ -37,6 +37,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${dmSans.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground`}>
+        <a
+          href="#main-content"
+          className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-2 focus-visible:left-2 focus-visible:z-[9999] focus-visible:bg-background focus-visible:text-foreground focus-visible:px-4 focus-visible:py-2 focus-visible:rounded-md focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          Skip to main content
+        </a>
         <QueryProvider>
           <AppHeader title="ParkPatrol" />
           {children}

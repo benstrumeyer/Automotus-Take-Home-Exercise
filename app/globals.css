@@ -123,11 +123,24 @@
     touch-action: manipulation;
   }
 
+  button,
+  [role="button"],
+  a {
+    transition: transform 0.1s ease;
+  }
+
   button:not(:disabled):active,
   [role="button"]:not(:disabled):active,
   a:active {
     transform: scale(0.97);
-    transition: transform 0.1s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
