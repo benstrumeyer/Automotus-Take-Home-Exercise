@@ -27,9 +27,7 @@ export function VehicleCard({ vehicle, onAction }: VehicleCardProps) {
   const overstayLabel =
     vehicle.overstay_status === 'violation'
       ? `+${formatDuration(vehicle.overstay_minutes)}`
-      : vehicle.overstay_status === 'approaching'
-        ? 'Almost up'
-        : `${formatDuration(vehicle.time_limit_minutes - vehicle.overstay_minutes)} left`
+      : `${formatDuration(vehicle.time_limit_minutes - vehicle.overstay_minutes)} left`
 
   return (
     <div className={styles.card}>
@@ -67,10 +65,8 @@ export function VehicleCard({ vehicle, onAction }: VehicleCardProps) {
           size="sm"
           className={cn(styles.cite, clicked === 'cite' && styles.clicked)}
           onClick={() => {
-            if (window.confirm(`Cite vehicle ${vehicle.license_plate}?`)) {
-              setClicked('cite')
-              onAction(vehicle.id, 'cite')
-            }
+            setClicked('cite')
+            onAction(vehicle.id, 'cite')
           }}
         >
           Cite
