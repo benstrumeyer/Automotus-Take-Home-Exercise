@@ -38,28 +38,31 @@ export function ZoneDetailDrawer({ selectedZone, open, onOpenChange }: ZoneDetai
   const enforce = useEnforceVehicle()
   const { location: officerLocation } = useOfficerLocation()
 
+  // Prefer fresh zone data from detail query (includes optimistic updates)
+  const zone = data?.zone ?? selectedZone
+
   const handleStatusChange = () => {
-    if (!selectedZone) return
-    if (selectedZone.status === 'idle') {
-      arrive.mutate(selectedZone.zone_id)
+    if (!zone) return
+    if (zone.status === 'idle') {
+      arrive.mutate(zone.zone_id)
     } else {
-      depart.mutate(selectedZone.zone_id)
+      depart.mutate(zone.zone_id)
     }
   }
 
   const handleVehicleAction = (vehicleId: string, action: EnforcementAction) => {
-    if (!selectedZone) return
+    if (!zone) return
     enforce.mutate({
-      zoneId: selectedZone.zone_id,
+      zoneId: zone.zone_id,
       vehicleId,
       action,
     })
   }
 
   const handleNavigate = () => {
-    if (!selectedZone) return
+    if (!zone) return
     window.open(
-      `https://www.google.com/maps/dir/?api=1&origin=${officerLocation.lat},${officerLocation.lng}&destination=${selectedZone.lat},${selectedZone.lng}&travelmode=walking`,
+      `https://www.google.com/maps/dir/?api=1&origin=${officerLocation.lat},${officerLocation.lng}&destination=${zone.lat},${zone.lng}&travelmode=walking`,
       '_blank'
     )
   }
@@ -71,28 +74,28 @@ export function ZoneDetailDrawer({ selectedZone, open, onOpenChange }: ZoneDetai
           <DrawerHeader className={styles.header}>
             <div className={styles.titleRow}>
               <DrawerTitle className={styles.title}>
-                {selectedZone?.zone_name ?? 'Zone Detail'}
+                {zone?.zone_name ?? 'Zone Detail'}
               </DrawerTitle>
-              {selectedZone && selectedZone.violation_count > 0 && (
+              {zone && zone.violation_count > 0 && (
                 <span className={styles.violationPill}>
                   <AlertTriangle size={12} aria-hidden="true" />
-                  {selectedZone.violation_count}
+                  {zone.violation_count}
                 </span>
               )}
             </div>
 
             <DrawerDescription className={styles.description}>
               <MapPin size={11} className={styles.descIcon} aria-hidden="true" />
-              {selectedZone?.address}
-              {selectedZone && (
+              {zone?.address}
+              {zone && (
                 <span className={styles.occupancyPill}>
                   <Car size={12} aria-hidden="true" />
-                  {selectedZone.occupancy}/{selectedZone.max_capacity}
+                  {zone.occupancy}/{zone.max_capacity}
                 </span>
               )}
             </DrawerDescription>
 
-            {selectedZone && (
+            {zone && (
               <div className={styles.actionRow}>
                 <Button
                   variant="secondary"
@@ -100,7 +103,7 @@ export function ZoneDetailDrawer({ selectedZone, open, onOpenChange }: ZoneDetai
                   onClick={handleStatusChange}
                   disabled={arrive.isPending || depart.isPending}
                 >
-                  {STATUS_LABELS[selectedZone.status] ?? 'On My Way'}
+                  {STATUS_LABELS[zone.status] ?? 'On My Way'}
                 </Button>
                 <Button
                   size="icon"

@@ -81,9 +81,16 @@ export function useEnforceVehicle() {
 
       queryClient.setQueryData<ZoneDetail>(['zone', zoneId], (old) => {
         if (!old) return old
+        const removed = old.vehicles.find((v) => v.id === vehicleId)
+        const vehicles = old.vehicles.filter((v) => v.id !== vehicleId)
         return {
           ...old,
-          vehicles: old.vehicles.filter((v) => v.id !== vehicleId),
+          zone: {
+            ...old.zone,
+            violation_count: old.zone.violation_count - (removed?.overstay_status === 'violation' ? 1 : 0),
+            occupancy: old.zone.occupancy - 1,
+          },
+          vehicles,
         }
       })
 
