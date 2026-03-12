@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { memo, useState, useCallback } from 'react'
 import Image from 'next/image'
 import type { Vehicle, EnforcementAction } from '@/types'
 import { Badge } from '@/components/ui/badge'
@@ -21,13 +21,18 @@ const TYPE_COLORS: Record<string, string> = {
   commercial: 'bg-slate-100 text-slate-800',
 }
 
-export function VehicleCard({ vehicle, onAction }: VehicleCardProps) {
+export const VehicleCard = memo(function VehicleCard({ vehicle, onAction }: VehicleCardProps) {
   const [clicked, setClicked] = useState<EnforcementAction | null>(null)
 
   const overstayLabel =
     vehicle.overstay_status === 'violation'
       ? `+${formatDuration(vehicle.overstay_minutes)}`
       : `${formatDuration(vehicle.time_limit_minutes - vehicle.overstay_minutes)} left`
+
+  const handleAction = useCallback((action: EnforcementAction) => {
+    setClicked(action)
+    onAction(vehicle.id, action)
+  }, [onAction, vehicle.id])
 
   return (
     <div className={styles.card}>
@@ -64,10 +69,7 @@ export function VehicleCard({ vehicle, onAction }: VehicleCardProps) {
         <Button
           size="sm"
           className={cn(styles.cite, clicked === 'cite' && styles.clicked)}
-          onClick={() => {
-            setClicked('cite')
-            onAction(vehicle.id, 'cite')
-          }}
+          onClick={() => handleAction('cite')}
         >
           Cite
         </Button>
@@ -75,10 +77,7 @@ export function VehicleCard({ vehicle, onAction }: VehicleCardProps) {
           size="sm"
           variant="secondary"
           className={cn(styles.action, clicked === 'warn' && styles.clicked)}
-          onClick={() => {
-            setClicked('warn')
-            onAction(vehicle.id, 'warn')
-          }}
+          onClick={() => handleAction('warn')}
         >
           Warn
         </Button>
@@ -86,14 +85,11 @@ export function VehicleCard({ vehicle, onAction }: VehicleCardProps) {
           size="sm"
           variant="outline"
           className={cn(styles.action, 'text-muted-foreground', clicked === 'skip' && styles.clicked)}
-          onClick={() => {
-            setClicked('skip')
-            onAction(vehicle.id, 'skip')
-          }}
+          onClick={() => handleAction('skip')}
         >
           Skip
         </Button>
       </div>
     </div>
   )
-}
+})

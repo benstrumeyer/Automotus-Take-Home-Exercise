@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { ErrorState } from '@/components/error-state'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { ZoneDetailDrawer } from '@/components/zone/zone-detail-drawer'
@@ -20,10 +20,10 @@ export default function MapPage() {
   const [selectedZone, setSelectedZone] = useState<QueueStop | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
-  const handleMarkerTap = (stop: QueueStop) => {
+  const handleMarkerTap = useCallback((stop: QueueStop) => {
     setSelectedZone(stop)
     setDrawerOpen(true)
-  }
+  }, [])
 
   return (
     <>

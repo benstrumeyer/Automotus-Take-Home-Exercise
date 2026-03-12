@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import Image from 'next/image'
 import type { QueueStop } from '@/types'
 import { AlertTriangle, ChevronRight } from 'lucide-react'
@@ -10,7 +11,7 @@ interface QueueCardProps {
   onTap: (stop: QueueStop) => void
 }
 
-export function QueueCard({ stop, onTap }: QueueCardProps) {
+export const QueueCard = memo(function QueueCard({ stop, onTap }: QueueCardProps) {
   return (
     <button
       className={styles.card}
@@ -42,4 +43,4 @@ export function QueueCard({ stop, onTap }: QueueCardProps) {
       )}
     </button>
   )
-}
+})

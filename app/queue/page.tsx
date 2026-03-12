@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { QueueCard } from '@/components/queue/queue-card'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { EmptyQueue } from '@/components/queue/empty-queue'
@@ -19,12 +19,12 @@ export default function QueuePage() {
   const [selectedZone, setSelectedZone] = useState<QueueStop | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
-  const handleTapZone = (stop: QueueStop) => {
+  const handleTapZone = useCallback((stop: QueueStop) => {
     setSelectedZone(stop)
     setDrawerOpen(true)
-  }
+  }, [])
 
-  const handleNavigateQueue = () => {
+  const handleNavigateQueue = useCallback(() => {
     if (!queue || queue.length === 0) return
 
     const violationStops = queue.filter((z) => z.violation_count > 0).slice(0, 25)
@@ -41,7 +41,7 @@ export default function QueuePage() {
     if (waypoints) url += `&waypoints=${waypoints}`
 
     window.open(url, '_blank')
-  }
+  }, [queue, officerLocation])
 
   return (
     <main id="main-content" className={styles.main}>
