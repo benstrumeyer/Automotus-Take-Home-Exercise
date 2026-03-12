@@ -1,5 +1,6 @@
 'use client'
 
+import { useCallback } from 'react'
 import {
   Drawer,
   DrawerContent,
@@ -12,7 +13,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { VehicleCard } from './vehicle-card'
 import { ErrorState } from '@/components/error-state'
 import { useZoneDetail } from '@/hooks/use-zone-detail'
-import { useArriveAtZone, useDepartZone, useEnforceVehicle } from '@/hooks/use-zone-actions'
+import { useArriveAtZone, useEnforceVehicle } from '@/hooks/use-zone-actions'
 import { useOfficerLocation } from '@/hooks/use-officer-location'
 import type { QueueStop, EnforcementAction } from '@/types'
 import { Navigation, MapPin, AlertTriangle, Car } from 'lucide-react'
@@ -24,48 +25,40 @@ interface ZoneDetailDrawerProps {
   onOpenChange: (open: boolean) => void
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  idle: 'On My Way',
-  on_scene: 'Depart Zone',
-}
 
 export function ZoneDetailDrawer({ selectedZone, open, onOpenChange }: ZoneDetailDrawerProps) {
   const { data, isLoading, isError, refetch } = useZoneDetail(
     open ? selectedZone?.zone_id ?? null : null
   )
   const arrive = useArriveAtZone()
-  const depart = useDepartZone()
   const enforce = useEnforceVehicle()
   const { location: officerLocation } = useOfficerLocation()
 
   // Prefer fresh zone data from detail query (includes optimistic updates)
   const zone = data?.zone ?? selectedZone
+  const isOnMyWay = zone?.status === 'on_scene'
 
-  const handleStatusChange = () => {
+  const handleOnMyWay = useCallback(() => {
     if (!zone) return
-    if (zone.status === 'idle') {
-      arrive.mutate(zone.zone_id)
-    } else {
-      depart.mutate(zone.zone_id)
-    }
-  }
+    arrive.mutate(zone.zone_id)
+  }, [zone, arrive])
 
-  const handleVehicleAction = (vehicleId: string, action: EnforcementAction) => {
+  const handleVehicleAction = useCallback((vehicleId: string, action: EnforcementAction) => {
     if (!zone) return
     enforce.mutate({
       zoneId: zone.zone_id,
       vehicleId,
       action,
     })
-  }
+  }, [zone, enforce])
 
-  const handleNavigate = () => {
+  const handleNavigate = useCallback(() => {
     if (!zone) return
     window.open(
       `https://www.google.com/maps/dir/?api=1&origin=${officerLocation.lat},${officerLocation.lng}&destination=${zone.lat},${zone.lng}&travelmode=walking`,
       '_blank'
     )
-  }
+  }, [zone, officerLocation])
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -100,10 +93,10 @@ export function ZoneDetailDrawer({ selectedZone, open, onOpenChange }: ZoneDetai
                 <Button
                   variant="secondary"
                   className={styles.statusBtn}
-                  onClick={handleStatusChange}
-                  disabled={arrive.isPending || depart.isPending}
+                  onClick={handleOnMyWay}
+                  disabled={isOnMyWay || arrive.isPending}
                 >
-                  {STATUS_LABELS[zone.status] ?? 'On My Way'}
+                  On My Way
                 </Button>
                 <Button
                   size="icon"

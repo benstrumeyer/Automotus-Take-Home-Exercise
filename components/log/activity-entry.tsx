@@ -1,9 +1,10 @@
 'use client'
 
+import { memo } from 'react'
 import type { ActivityEntry as ActivityEntryType } from '@/types'
 import { formatTime } from '@/lib/utils'
 import { cn } from '@/lib/utils'
-import { FileWarning, AlertTriangle, SkipForward, CheckCircle, Navigation, MapPin } from 'lucide-react'
+import { FileWarning, AlertTriangle, SkipForward, CheckCircle, Navigation } from 'lucide-react'
 import styles from './activity-entry.module.scss'
 
 const ACTION_CONFIG = {
@@ -11,11 +12,10 @@ const ACTION_CONFIG = {
   warn: { icon: AlertTriangle, label: 'Warned', color: 'warn' },
   skip: { icon: SkipForward, label: 'Skipped', color: 'skip' },
   clear: { icon: CheckCircle, label: 'Cleared', color: 'clear' },
-  arrive: { icon: MapPin, label: 'Arrived', color: 'arrive' },
   depart: { icon: Navigation, label: 'Departed', color: 'depart' },
 } as const
 
-export function ActivityEntryCard({ entry }: { entry: ActivityEntryType }) {
+export const ActivityEntryCard = memo(function ActivityEntryCard({ entry }: { entry: ActivityEntryType }) {
   const config = ACTION_CONFIG[entry.action] ?? ACTION_CONFIG.clear
   const Icon = config.icon
 
@@ -29,4 +29,4 @@ export function ActivityEntryCard({ entry }: { entry: ActivityEntryType }) {
       <span className={styles.time}>{formatTime(entry.timestamp)}</span>
     </div>
   )
-}
+})

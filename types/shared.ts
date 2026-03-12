@@ -11,7 +11,7 @@ export type OverstayStatus = 'ok' | 'approaching' | 'violation'
 export type EnforcementAction = 'cite' | 'warn' | 'skip'
 
 /** Zone lifecycle actions */
-export type ZoneAction = 'arrive' | 'depart'
+export type ZoneAction = 'depart'
 
 /** All actions an officer can take (enforcement + zone + legacy) */
 export type ActionType = EnforcementAction | ZoneAction | 'clear'

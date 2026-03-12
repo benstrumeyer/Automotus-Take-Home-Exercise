@@ -53,7 +53,7 @@ export function fetchZoneDetail(zoneId: string): Promise<ZoneDetail> {
 // Zone Actions
 // ---------------------------------------------------------------------------
 
-/** Officer arrives at a zone */
+/** Officer claims a zone (On My Way) — status becomes on_scene */
 export function arriveAtZone(
   zoneId: string
 ): Promise<{ zone: QueueStop; activity: ActivityEntry }> {

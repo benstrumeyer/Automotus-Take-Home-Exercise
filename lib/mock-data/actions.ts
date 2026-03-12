@@ -5,7 +5,7 @@ import { getState } from './state'
 
 const now = () => new Date().toISOString()
 
-/** Arrive at a zone — sets status to on_scene, logs activity */
+/** Claim a zone (On My Way) — sets status to on_scene, logs activity as depart */
 export function arriveAtZone(zoneId: string): { zone: QueueStop; activity: ActivityEntry } | undefined {
   const { zones, activityLog } = getState()
   const zone = zones.find((z) => z.zone_id === zoneId)
@@ -15,7 +15,7 @@ export function arriveAtZone(zoneId: string): { zone: QueueStop; activity: Activ
     id: generateId(),
     zone_id: zoneId,
     zone_name: zone.zone_name,
-    action: 'arrive',
+    action: 'depart',
     timestamp: now(),
   }
   activityLog.unshift(entry)

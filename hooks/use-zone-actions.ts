@@ -5,7 +5,7 @@ import { arriveAtZone, departZone, enforceVehicle } from '@/lib/api-client'
 import { toast } from 'sonner'
 import type { QueueStop, ZoneDetail } from '@/types'
 
-/** Mutation: officer arrives at a zone */
+/** Mutation: officer claims a zone (On My Way) — status becomes on_scene */
 export function useArriveAtZone() {
   const queryClient = useQueryClient()
 
@@ -25,7 +25,7 @@ export function useArriveAtZone() {
       if (context?.previous) {
         queryClient.setQueryData(['queue'], context.previous)
       }
-      toast.error('Failed to arrive at zone. Try again.')
+      toast.error('Failed to claim zone. Try again.')
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['queue'] })
