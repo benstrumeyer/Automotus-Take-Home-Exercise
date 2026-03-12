@@ -361,7 +361,6 @@ graph LR
     end
 
     subgraph "Zone Actions"
-        PA["POST /api/zones/:id/arrive"]
         PD["POST /api/zones/:id/depart"]
         PC["POST /api/zones/:id/claim"]
     end

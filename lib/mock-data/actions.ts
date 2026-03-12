@@ -5,29 +5,12 @@ import { getState } from './state'
 
 const now = () => new Date().toISOString()
 
-/** Claim a zone (On My Way) — sets status to on_scene, logs activity as depart */
-export function arriveAtZone(zoneId: string): { zone: QueueStop; activity: ActivityEntry } | undefined {
-  const { zones, activityLog } = getState()
-  const zone = zones.find((z) => z.zone_id === zoneId)
-  if (!zone) return undefined
-  zone.status = 'on_scene'
-  const entry: ActivityEntry = {
-    id: generateId(),
-    zone_id: zoneId,
-    zone_name: zone.zone_name,
-    action: 'depart',
-    timestamp: now(),
-  }
-  activityLog.unshift(entry)
-  return { zone, activity: entry }
-}
-
-/** Depart from a zone — sets status back to idle, logs activity */
+/** Officer departs toward a zone (On My Way) — claims zone, sets status to on_scene, logs activity */
 export function departZone(zoneId: string): { zone: QueueStop; activity: ActivityEntry } | undefined {
   const { zones, activityLog } = getState()
   const zone = zones.find((z) => z.zone_id === zoneId)
   if (!zone) return undefined
-  zone.status = 'idle'
+  zone.status = 'on_scene'
   const entry: ActivityEntry = {
     id: generateId(),
     zone_id: zoneId,

@@ -13,7 +13,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { VehicleCard } from './vehicle-card'
 import { ErrorState } from '@/components/error-state'
 import { useZoneDetail } from '@/hooks/use-zone-detail'
-import { useArriveAtZone, useEnforceVehicle } from '@/hooks/use-zone-actions'
+import { useDepartZone, useEnforceVehicle } from '@/hooks/use-zone-actions'
 import { useOfficerLocation } from '@/hooks/use-officer-location'
 import type { QueueStop, EnforcementAction } from '@/types'
 import { Navigation, MapPin, AlertTriangle, Car } from 'lucide-react'
@@ -30,7 +30,7 @@ export function ZoneDetailDrawer({ selectedZone, open, onOpenChange }: ZoneDetai
   const { data, isLoading, isError, refetch } = useZoneDetail(
     open ? selectedZone?.zone_id ?? null : null
   )
-  const arrive = useArriveAtZone()
+  const depart = useDepartZone()
   const enforce = useEnforceVehicle()
   const { location: officerLocation } = useOfficerLocation()
 
@@ -40,8 +40,8 @@ export function ZoneDetailDrawer({ selectedZone, open, onOpenChange }: ZoneDetai
 
   const handleOnMyWay = useCallback(() => {
     if (!zone) return
-    arrive.mutate(zone.zone_id)
-  }, [zone, arrive])
+    depart.mutate(zone.zone_id)
+  }, [zone, depart])
 
   const handleVehicleAction = useCallback((vehicleId: string, action: EnforcementAction) => {
     if (!zone) return
@@ -94,7 +94,7 @@ export function ZoneDetailDrawer({ selectedZone, open, onOpenChange }: ZoneDetai
                   variant="secondary"
                   className={styles.statusBtn}
                   onClick={handleOnMyWay}
-                  disabled={isOnMyWay || arrive.isPending}
+                  disabled={isOnMyWay || depart.isPending}
                 >
                   On My Way
                 </Button>

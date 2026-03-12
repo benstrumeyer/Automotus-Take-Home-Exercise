@@ -1,16 +1,16 @@
 'use client'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { arriveAtZone, departZone, enforceVehicle } from '@/lib/api-client'
+import { departZone, enforceVehicle } from '@/lib/api-client'
 import { toast } from 'sonner'
 import type { QueueStop, ZoneDetail } from '@/types'
 
-/** Mutation: officer claims a zone (On My Way) — status becomes on_scene */
-export function useArriveAtZone() {
+/** Mutation: officer departs toward a zone (On My Way) — claims zone, status becomes on_scene */
+export function useDepartZone() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (zoneId: string) => arriveAtZone(zoneId),
+    mutationFn: (zoneId: string) => departZone(zoneId),
     onMutate: async (zoneId) => {
       await queryClient.cancelQueries({ queryKey: ['queue'] })
       const previous = queryClient.getQueryData<QueueStop[]>(['queue'])
@@ -25,37 +25,7 @@ export function useArriveAtZone() {
       if (context?.previous) {
         queryClient.setQueryData(['queue'], context.previous)
       }
-      toast.error('Failed to claim zone. Try again.')
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['queue'] })
-      queryClient.invalidateQueries({ queryKey: ['zone'] })
-      queryClient.invalidateQueries({ queryKey: ['activity'] })
-    },
-  })
-}
-
-/** Mutation: officer departs from a zone */
-export function useDepartZone() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (zoneId: string) => departZone(zoneId),
-    onMutate: async (zoneId) => {
-      await queryClient.cancelQueries({ queryKey: ['queue'] })
-      const previous = queryClient.getQueryData<QueueStop[]>(['queue'])
-
-      queryClient.setQueryData<QueueStop[]>(['queue'], (old) =>
-        old?.map((z) => (z.zone_id === zoneId ? { ...z, status: 'idle' as const } : z))
-      )
-
-      return { previous }
-    },
-    onError: (_err, _vars, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(['queue'], context.previous)
-      }
-      toast.error('Failed to depart zone. Try again.')
+      // Silent failure — rollback is handled by restoring previous cache
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['queue'] })

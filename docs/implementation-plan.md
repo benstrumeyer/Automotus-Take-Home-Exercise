@@ -59,7 +59,6 @@ app/
     reset/route.ts
     zones/[id]/
       route.ts
-      arrive/route.ts
       depart/route.ts
       vehicles/[vid]/[action]/route.ts
 
@@ -139,7 +138,6 @@ All routes: 200–500ms simulated delay.
 | `/api/queue` | GET | `QueueStop[]` — sorted by priority_score desc |
 | `/api/zones/[id]` | GET | `ZoneDetail { zone, vehicles }` |
 | `/api/activity` | GET | `ActivityEntry[]` — newest first |
-| `/api/zones/[id]/arrive` | POST | `{ zone, activity }` |
 | `/api/zones/[id]/depart` | POST | `{ zone, activity }` |
 | `/api/zones/[id]/vehicles/[vid]/[action]` | POST | `{ zone, vehicle, activity }` |
 | `/api/reset` | POST | `{ ok, message }` |

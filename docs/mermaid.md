@@ -11,8 +11,7 @@ graph LR
     end
 
     subgraph "POST (Write)"
-        AR["POST /api/zones/:id/arrive"] -->|"{ zone, activity }"| R4["arriveAtZone()<br/>claims zone, logs depart"]
-        DE["POST /api/zones/:id/depart"] -->|"{ zone, activity }"| R5["departZone()<br/>status → idle"]
+        DE["POST /api/zones/:id/depart"] -->|"{ zone, activity }"| R5["departZone()<br/>On My Way — claims zone"]
         EN["POST /api/zones/:id/vehicles/:vid/:action"] -->|"{ zone, vehicle, activity }"| R6["enforceVehicle()<br/>cite / warn / skip"]
         RE["POST /api/reset"] -->|"{ ok }"| R7["resetState()<br/>Reseed all data"]
     end
@@ -38,7 +37,7 @@ graph TB
         ROUTES["API Route Handlers<br/>app/api/**/route.ts"]
         STATE["mock-data/state.ts<br/>globalThis Singleton"]
         QUERIES["mock-data/queries.ts<br/>getQueue, getZone, getActivity"]
-        ACTIONS["mock-data/actions.ts<br/>arriveAtZone, departZone, enforceVehicle"]
+        ACTIONS["mock-data/actions.ts<br/>departZone, enforceVehicle"]
         PRIORITY["priority.ts<br/>computePriorityScore"]
     end
 
@@ -208,8 +207,7 @@ graph LR
         UQ["useQueue()"]
         UZD["useZoneDetail(id)"]
         UA["useActivity()"]
-        UAR["useArriveAtZone()<br/>(On My Way)"]
-        UDE["useDepartZone()"]
+        UDE["useDepartZone()<br/>(On My Way)"]
         UEN["useEnforceVehicle()"]
         UOL["useOfficerLocation()"]
     end
@@ -218,20 +216,17 @@ graph LR
         AQ["/api/queue"]
         AZ["/api/zones/:id"]
         AA["/api/activity"]
-        AAR["/api/zones/:id/arrive"]
         ADE["/api/zones/:id/depart"]
         AEN["/api/zones/:id/vehicles/:vid/:action"]
     end
 
     MAP --> UQ
     MAP --> UZD
-    MAP --> UAR
     MAP --> UDE
     MAP --> UEN
     MAP --> UOL
     QUEUE --> UQ
     QUEUE --> UZD
-    QUEUE --> UAR
     QUEUE --> UDE
     QUEUE --> UEN
     QUEUE --> UOL
@@ -240,7 +235,6 @@ graph LR
     UQ --> AQ
     UZD --> AZ
     UA --> AA
-    UAR --> AAR
     UDE --> ADE
     UEN --> AEN
 ```
@@ -309,7 +303,7 @@ graph TD
         BUILDERS["builders.ts<br/>buildInitialState()<br/>computeOverstay()"]
         STATE["state.ts<br/>getState() / resetState()<br/>globalThis singleton"]
         QUERIES["queries.ts<br/>getQueue() getZone()<br/>getZoneVehicles() getActivity()"]
-        ACTIONS["actions.ts<br/>arriveAtZone() departZone()<br/>enforceVehicle()"]
+        ACTIONS["actions.ts<br/>departZone() enforceVehicle()"]
     end
 
     SEED -->|"zone + vehicle definitions"| BUILDERS

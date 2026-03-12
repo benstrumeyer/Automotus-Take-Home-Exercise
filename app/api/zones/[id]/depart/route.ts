@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { departZone } from '@/lib/mock-data'
 
-/** POST /api/zones/[id]/depart — Officer departs zone */
+/** POST /api/zones/[id]/depart — Officer departs toward zone (On My Way), claims it */
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

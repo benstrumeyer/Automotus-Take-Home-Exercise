@@ -72,8 +72,7 @@ All routes live in `/app/api`. Mock backend with `globalThis` singleton state an
 
 | Method | Path | Response | Description |
 |--------|------|----------|-------------|
-| POST | `/api/zones/[id]/arrive` | `{ zone, activity }` | Officer claims zone (On My Way) — status becomes `on_scene` |
-| POST | `/api/zones/[id]/depart` | `{ zone, activity }` | Officer departs — status becomes `idle` |
+| POST | `/api/zones/[id]/depart` | `{ zone, activity }` | Officer departs toward zone (On My Way) — status becomes `on_scene` |
 
 ### Vehicle Enforcement Endpoints
 
@@ -114,7 +113,7 @@ A single dynamic route validates the `[action]` segment. Invalid actions return 
 }
 ```
 
-**POST /api/zones/zone-03/arrive** (Officer taps "On My Way")
+**POST /api/zones/zone-03/depart** (Officer taps "On My Way")
 ```json
 {
   "zone": {
@@ -189,8 +188,7 @@ app/
   api/
     queue/route.ts            # GET sorted zones
     zones/[id]/route.ts       # GET zone detail
-    zones/[id]/arrive/route.ts # POST officer claims zone (On My Way)
-    zones/[id]/depart/route.ts # POST officer departs
+    zones/[id]/depart/route.ts # POST officer departs toward zone (On My Way)
     zones/[id]/vehicles/[vid]/[action]/route.ts  # POST cite/warn/skip
     activity/route.ts         # GET activity log
     reset/route.ts            # POST reset mock data
