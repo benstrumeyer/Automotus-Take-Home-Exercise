@@ -1,7 +1,7 @@
 import type { MockState } from '@/types/domain'
 import { buildVehicles, buildZones } from './builders'
 
-const GLOBAL_KEY = '__parkpatrol_mock_state__' as const
+const GLOBAL_KEY = '__automotus_go_mock_state__' as const
 
 function createFreshState(): MockState {
   const vehicles = buildVehicles()

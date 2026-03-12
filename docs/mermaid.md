@@ -1,4 +1,4 @@
-# ParkPatrol: End-to-End Architecture & Communication Flow
+# Automotus Go: End-to-End Architecture & Communication Flow
 
 ## High-Level System Overview
 
@@ -84,7 +84,7 @@ classDiagram
     QueueStop "1" o-- "*" InternalVehicle : zone_id
 ```
 
-The entire store lives on `globalThis.__parkpatrol_mock_state__` so it survives HMR in dev. `resetState()` replaces it with fresh seed data from `mock-data/seed.ts`.
+The entire store lives on `globalThis.__automotus_go_mock_state__` so it survives HMR in dev. `resetState()` replaces it with fresh seed data from `mock-data/seed.ts`.
 
 ### Type Enums
 
@@ -321,6 +321,6 @@ graph TD
 
 - **seed.ts**: Raw zone/vehicle definitions for 16 Philadelphia intersections around Rittenhouse Square
 - **builders.ts**: Constructs initial `MockState`, computes overstay status from arrival times
-- **state.ts**: Singleton on `globalThis.__parkpatrol_mock_state__` — survives HMR
+- **state.ts**: Singleton on `globalThis.__automotus_go_mock_state__` — survives HMR
 - **queries.ts**: Pure reads — `getZoneVehicles()` filters out actioned vehicles before returning
 - **actions.ts**: Mutations — each action marks vehicles, recounts zone stats, recomputes priority, logs activity

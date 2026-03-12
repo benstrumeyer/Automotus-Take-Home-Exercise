@@ -19,7 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'ParkPatrol — Enforcement Companion',
+  title: 'Automotus Go — Enforcement Companion',
   description: 'Mobile-first parking enforcement officer companion app',
 }
 
@@ -44,7 +44,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <QueryProvider>
-          <AppHeader title="ParkPatrol" />
+          <AppHeader title="Automotus Go" />
           {children}
           <BottomNav />
         </QueryProvider>

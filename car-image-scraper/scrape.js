@@ -1,5 +1,5 @@
 /**
- * Vehicle Image Scraper for ParkPatrol
+ * Vehicle Image Scraper for Automotus Go
  *
  * Fetches side-view images of the 40 vehicle types used in mock data.
  * Images are scraped from Bing Image Search and saved locally so the
