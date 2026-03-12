@@ -45,8 +45,6 @@ export function MapViewFallback({ zones, onMarkerTap, officerLocation }: MapView
 
       {zones.map((zone) => {
         const color = getColor(zone)
-        const hasViolations = zone.violation_count > 0
-        const size = hasViolations ? 30 : 22
         return (
           <Marker
             key={zone.zone_id}
@@ -60,16 +58,16 @@ export function MapViewFallback({ zones, onMarkerTap, officerLocation }: MapView
           >
             <svg
               aria-hidden="true"
-              width={size}
-              height={size}
-              viewBox={`0 0 ${size} ${size}`}
+              width={30}
+              height={30}
+              viewBox="0 0 30 30"
               style={{ cursor: 'pointer' }}
             >
-              <circle cx={size / 2} cy={size / 2} r={size / 2} fill={color} />
-              {hasViolations && (
+              <circle cx={15} cy={15} r={15} fill={color} />
+              {zone.violation_count > 0 && (
                 <text
-                  x={size / 2}
-                  y={size / 2}
+                  x={15}
+                  y={15}
                   textAnchor="middle"
                   dominantBaseline="central"
                   fill="white"

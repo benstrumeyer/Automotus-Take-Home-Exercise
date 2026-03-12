@@ -29,28 +29,23 @@ const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ''
 const MAP_ID = 'parking-enforcement-map'
 
 function ZonePin({ color, count }: { color: string; count: number }) {
-  const hasViolations = count > 0
   return (
     <svg
       aria-hidden="true"
-      width={hasViolations ? 32 : 26}
-      height={hasViolations ? 38 : 32}
-      viewBox={hasViolations ? '0 0 32 38' : '0 0 26 32'}
+      width={32}
+      height={38}
+      viewBox="0 0 32 38"
       className={styles.zonePin}
     >
       <path
-        d={hasViolations
-          ? 'M4 0 H28 Q32 0 32 4 V22 Q32 25 30 26 L16 38 L2 26 Q0 25 0 22 V4 Q0 0 4 0Z'
-          : 'M4 0 H22 Q26 0 26 4 V18 Q26 21 24 22 L13 32 L2 22 Q0 21 0 18 V4 Q0 0 4 0Z'}
+        d="M4 0 H28 Q32 0 32 4 V22 Q32 25 30 26 L16 38 L2 26 Q0 25 0 22 V4 Q0 0 4 0Z"
         fill="white"
       />
       <path
-        d={hasViolations
-          ? 'M6 2 H26 Q30 2 30 6 V21 Q30 23.5 28.5 24.5 L16 35 L3.5 24.5 Q2 23.5 2 21 V6 Q2 2 6 2Z'
-          : 'M6 2 H20 Q24 2 24 6 V17 Q24 19.5 22.5 20.5 L13 30 L3.5 20.5 Q2 19.5 2 17 V6 Q2 2 6 2Z'}
+        d="M6 2 H26 Q30 2 30 6 V21 Q30 23.5 28.5 24.5 L16 35 L3.5 24.5 Q2 23.5 2 21 V6 Q2 2 6 2Z"
         fill={color}
       />
-      {hasViolations && (
+      {count > 0 && (
         <text
           x="16"
           y="16"
