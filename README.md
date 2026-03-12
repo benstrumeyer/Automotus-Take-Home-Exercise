@@ -4,6 +4,10 @@ A mobile-first prototype that modernizes the parking enforcement officer workflo
 
 Built for the Automotus take-home exercise.
 
+| Map View | Zone Queue | Zone Detail | Activity Log |
+|----------|-----------|-------------|--------------|
+| ![Map](docs/screenshots/map.png) | ![Queue](docs/screenshots/queue.png) | ![Drawer](docs/screenshots/drawer.png) | ![Log](docs/screenshots/log.png) |
+
 ---
 
 ## Quick Start
